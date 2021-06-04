@@ -16,10 +16,32 @@ mapboxgl.accessToken = mapboxToken;
 const tmbApi = "https://api.tmb.cat/v1/planner/plan";
 const appId = "ba67b92e"; // Mete aquí el app_id de TMB
 const appKey = "d65b2261fc0be12f06f831fc8334fe5a"; // Mete aquí el app_key de TMB
+let nuevaRuta;
 const metropolitano /* ano jaja */ = fetch(
+  //llamada a la api tmb
   `${tmbApi}?app_id=${appId}&app_key=${appKey}&fromPlace=41.3755204,2.1498870&toPlace=41.422520,2.187824&date=06/06/2021&time=11:58am&arriveBy=11:58am&mode=TRANSIT,WALK`
-);
+)
+  .then((dato) => dato.json())
+  .then((datos) => planning(datos.plan)); //extraccion del plan de la ruta de tmb ^ justo aqui arriva parametros obligatorios que he incluido coordenadas tendremos que asignarlas a constantes o varieables segun encesitemos
 console.log(metropolitano);
+let origen;
+
+class Planning {
+  //creacion de clase objeto para poder sacar los pannings
+  origen;
+  itinerario;
+  destino;
+  constructor(origen, itinerario, destino) {
+    this.origen = origen;
+    this.itinerario = itinerario;
+    this.destino = destino;
+  }
+}
+
+const planning = (datos) => {
+  nuevaRuta = new Planning(datos.from, datos.itineraries, datos.to); //creacion del planning
+};
+console.log(nuevaRuta); //fracaso de extraccion del planning
 
 //captacion de las coordenadas introducidas en mapbox
 let coordenadasBarcelona = [];
