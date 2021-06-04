@@ -17,4 +17,8 @@ Las especificaciones de la aplicación son las siguientes:
 - Cuando obtengamos los pasos de la API, hay que pintar un elemento con clase `paso` que sea un clon del actual `paso-dummy`.
 - En cada elemento paso debe haber la siguiente información:
   - El elemento paso tiene que tener una clase `walk`, `bus` o `subway` dependiendo del medio de transporte/locomoción.
-  - 
+  - En el encabezado tiene que poner el origen y el destino, y un link al mapa en Google Maps
+  - Hora
+  - Distancia
+  - Duración
+  - Mapa
