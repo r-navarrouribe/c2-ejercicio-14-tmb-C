@@ -11,16 +11,14 @@
       rel="stylesheet"
     />
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css"
+      type="text/css"
+    />
+    <script src="js/index.js" defer></script>
     <link rel="stylesheet" href="css/estilos.css" />
-    <script src="js/index.js" defer>
-      const geolocalizar = new MapboxGeocoder({
-              accessToken: mapboxgl.accessToken,
-              mapboxgl: mapboxgl,
-              marker: false,
-              placeholder: "busca perrooooo",
-            });
-            map.addControl(geolocalizar);
-    </script>
   </head>
   <body>
     ¡
@@ -82,7 +80,5 @@
         </li>
       </ul>
     </div>
-
-    <script></script>
   </body>
 </html>

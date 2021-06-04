@@ -32,6 +32,13 @@ const arrayCoordenadas = (array) => {
       zoom: 12,
     });
     let marcador = new mapboxgl.Marker().setLngLat(coordenadas).addTo(mapbox);
+    const geolocalizar = new MapboxGeocoder({
+      accessToken: mapboxgl.accessToken,
+      mapboxgl: mapboxgl,
+      marker: false,
+      placeholder: "Encuentrate :DDDDD",
+    });
+    mapbox.addControl(geolocalizar);
   };
 
   generaMapa(coordenadasBarcelona, mapa);
