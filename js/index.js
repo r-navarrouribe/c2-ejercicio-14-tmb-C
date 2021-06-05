@@ -37,31 +37,6 @@ const coordenadas = {
     longitud: 0,
   },
 };
-const options = {
-  enableHighAccuracy: true,
-  timeout: 5000,
-  maximumAge: 0,
-};
-
-const obtenerPosicionActual = (posicion) => {
-  const { coords } = posicion;
-
-  coordenadas.desde.latitud = coords.latitude;
-  coordenadas.desde.longitud = coords.longitude;
-};
-
-const error = (error) => {
-  console.warn(`ERROR(${error.code}): ${error.message}`);
-};
-const ubicacionActual = () => {
-  navigator.geolocation.getCurrentPosition(
-    obtenerPosicionActual,
-    error,
-    options
-  );
-};
-ubicacionActual();
-console.log(coordenadas);
 
 const planning = (datos) => {
   const nuevaRuta = { ...datos }; // creacion del objeto planning
@@ -86,34 +61,36 @@ const planning = (datos) => {
     elemento.addEventListener("change", (e) => {
       const lugar = On === 0 ? coordenadas.desde : coordenadas.hasta;
       console.log(lugar);
-      if (indicarUbicacion[On].checked) {
-        if (e.target.value === "origen") {
-          const options = {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0,
-          };
+      if (e.target.value === "origen") {
+        const options = {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0,
+        };
 
-          const error = (error) => {
-            console.warn(`ERROR(${error.code}): ${error.message}`);
-          };
-          const obtenerPosicionActual = (posicion) => {
-            const { coords } = posicion;
+        const error = (error) => {
+          console.warn(`ERROR(${error.code}): ${error.message}`);
+        };
+        const obtenerPosicionActual = (posicion) => {
+          const { coords } = posicion;
 
-            lugar.longitud = coords.longitude;
-            lugar.latitud = coords.latitude;
-            console.log(coordenadas);
-          };
-          navigator.geolocation.getCurrentPosition(
-            obtenerPosicionActual,
-            error,
-            options
-          );
-        } else {
-          lugar.longitud = 0;
-          lugar.latitud = 0;
+          lugar.longitud = coords.longitude;
+          lugar.latitud = coords.latitude;
           console.log(coordenadas);
-        }
+        };
+        navigator.geolocation.getCurrentPosition(
+          obtenerPosicionActual,
+          error,
+          options
+        );
+      } else {
+        lugar.longitud = 0;
+        lugar.latitud = 0;
+        console.log(coordenadas);
+      }
+      if (indicarUbicacion[On].checked) {
+        console.log(e);
+
         inputTextElementos[On].classList.add("on");
       } else {
         inputTextElementos[On].classList.remove("on");
