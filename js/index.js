@@ -24,6 +24,9 @@ console.log(`llamada a TMB ${metropolitano}`);
 /* patron que he seguido : primero creo una funcion llamada planning que recogue el planning, despues extraemos los datos etc recogidos en nuevaRuta,
 dentro creo una funcion nueva que recoge los datos del mapbox (quizas tengamos que invertirlas) extraigo los datos de coordenadas y lo introducimos en el mapa a la vez que lo generamos en  */
 
+// Declaración de elementos para la iteración de los pasos
+const elementoListaPasos = document.querySelector(".pasos");
+
 const coordenadas = {
   desde: {
     latitud: 0,
@@ -107,8 +110,62 @@ const planning = (datos) => {
 
   const arrayCoordenadas = (array) => {
     const coordenadasBarcelona = array; // aqui sacamos las coordenadas del fetch
-
     console.log(coordenadasBarcelona);
+
+    // Declaración array de pasos
+
+    const listadoPasos = datos.itineraries[0].legs;
+
+    // Iteración de los pasos
+    let i = 1;
+    for (const paso of listadoPasos) {
+      const {
+        distance,
+        duration,
+        startTime,
+        from: { name: desde },
+        to: { name: hasta },
+      } = paso;
+
+      // Clonación del dummy
+      const nuevoPaso = document.querySelector(".paso-dummy").cloneNode(true);
+      nuevoPaso.classList.remove("paso-dummy");
+
+      // Encabezado
+      const encabezadoPaso = nuevoPaso.querySelector(".paso-encabezado");
+      const numeroPaso = nuevoPaso.querySelector(".paso-numero");
+      numeroPaso.textContent = `Paso ${i++}: `;
+      const origenPaso = nuevoPaso.querySelector(".paso-from");
+      origenPaso.textContent = `De ${desde} `;
+      const destinoPaso = nuevoPaso.querySelector(".paso-to");
+      destinoPaso.textContent = `a ${hasta}`;
+
+      // Hora, distancia y duración
+      const horaInicio = new Date(startTime);
+      const minutos = horaInicio.getMinutes();
+      const insertarMinutos = (minutos) => {
+        if (minutos < 10) {
+          return `0${minutos}`;
+        } else {
+          return minutos;
+        }
+      };
+      const horaPaso = nuevoPaso.querySelector(".paso-hora");
+      horaPaso.textContent = `Hora: ${horaInicio.getHours()}:${insertarMinutos(
+        minutos
+      )}`;
+
+      const distanciaPaso = nuevoPaso.querySelector(".paso-distancia");
+      distanciaPaso.textContent = `Distancia: ${Math.round(distance)}m`;
+
+      const duracionPaso = nuevoPaso.querySelector(".paso-duracion");
+      duracionPaso.textContent = `Duración: ${(duration / 3600).toFixed(2)}h`;
+      // Inserción del paso
+      elementoListaPasos.append(nuevoPaso);
+    }
+
+    console.log(listadoPasos);
+
     const mapa = document.querySelector(".mapa");
     // LLama a esta función para generar el pequeño mapa que sale en cada paso
     // Le tienes que pasar un array con las dos coordenadas y el elemento HTML donde tiene que generar el mapa
