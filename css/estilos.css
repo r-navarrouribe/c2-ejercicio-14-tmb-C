@@ -78,6 +78,10 @@ h3 {
 }
 input[type="text"] {
   font-size: 16px;
+  display: none;
+}
+.on {
+  display: block;
 }
 .coordenadas input[type="radio"] {
   margin-bottom: 10px;
