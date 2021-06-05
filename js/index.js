@@ -75,25 +75,53 @@ const planning = (datos) => {
 
   mapboxgl.accessToken = mapboxToken; // llamada a la api con su token
 
-  const displayTextInput = () => {
-    const grupoElemento = document.querySelectorAll(".coordenadas");
-    const indicarUbicacion = document.querySelectorAll(
-      ".introducirUbicacion input"
-    );
-    const inputTextElementos = document.querySelectorAll(
-      ".direccion-definitiva"
-    );
+  const inputTextElementos = document.querySelectorAll(".direccion-definitiva");
+  const grupoElemento = document.querySelectorAll(".coordenadas");
+  const indicarUbicacion = document.querySelectorAll(
+    ".introducirUbicacion input"
+  );
 
-    grupoElemento.forEach((elemento, On) => {
-      elemento.addEventListener("change", () => {
-        if (indicarUbicacion[On].checked) {
-          inputTextElementos[On].classList.add("on");
+  grupoElemento.forEach((elemento, On) => {
+    console.log(elemento, On);
+    elemento.addEventListener("change", (e) => {
+      const lugar = On === 0 ? coordenadas.desde : coordenadas.hasta;
+      console.log(lugar);
+      if (indicarUbicacion[On].checked) {
+        if (e.target.value === "origen") {
+          const options = {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0,
+          };
+
+          const error = (error) => {
+            console.warn(`ERROR(${error.code}): ${error.message}`);
+          };
+          const obtenerPosicionActual = (posicion) => {
+            const { coords } = posicion;
+
+            lugar.longitud = coords.longitude;
+            lugar.latitud = coords.latitude;
+            console.log(coordenadas);
+          };
+          navigator.geolocation.getCurrentPosition(
+            obtenerPosicionActual,
+            error,
+            options
+          );
         } else {
-          inputTextElementos[On].classList.remove("on");
+          lugar.longitud = 0;
+          lugar.latitud = 0;
+          console.log(coordenadas);
         }
-      });
+        inputTextElementos[On].classList.add("on");
+      } else {
+        inputTextElementos[On].classList.remove("on");
+      }
     });
-  };
+    console.log(coordenadas);
+  });
+
   const submitEnviar = document.querySelector(".form-coordenadas");
   submitEnviar.addEventListener("submit", (e) => {
     e.preventDefault();
