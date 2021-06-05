@@ -21,7 +21,7 @@ const metropolitano /* ano jaja */ = fetch(
   .then((datos) => planning(datos.plan)); // extraccion del plan de la ruta de tmb ^ justo aqui arriba parametros obligatorios que he incluido coordenadas tendremos que asignarlas a constantes o varieables segun encesitemos
 console.log(`llamada a TMB ${metropolitano}`);
 
-/* patron que he seguido : primero creo una funcion llamada planning que recogue el planning, despues extraemos los datos etc recogidos en nuevaRuta, 
+/* patron que he seguido : primero creo una funcion llamada planning que recogue el planning, despues extraemos los datos etc recogidos en nuevaRuta,
 dentro creo una funcion nueva que recoge los datos del mapbox (quizas tengamos que invertirlas) extraigo los datos de coordenadas y lo introducimos en el mapa a la vez que lo generamos en  */
 
 const coordenadas = {
@@ -71,6 +71,39 @@ const planning = (datos) => {
     .then((datos) => arrayCoordenadas(datos.features[0].geometry.coordinates)); // aqui cojo la primera coordenada de la array pero hay muchas mas, queda por ver /se podria hacer un bucle con datos.features y ver que podemos usar
 
   mapboxgl.accessToken = mapboxToken; // llamada a la api con su token
+
+  const displayTextInput = () => {
+    const grupoElemento = document.querySelectorAll(".coordenadas");
+    const indicarUbicacion = document.querySelectorAll(
+      ".introducirUbicacion input"
+    );
+    const inputTextElementos = document.querySelectorAll(
+      ".direccion-definitiva"
+    );
+
+    grupoElemento.forEach((elemento, On) => {
+      elemento.addEventListener("change", () => {
+        if (indicarUbicacion[On].checked) {
+          inputTextElementos[On].classList.add("on");
+        } else {
+          inputTextElementos[On].classList.remove("on");
+        }
+      });
+    });
+  };
+  const submitEnviar = document.querySelector(".form-coordenadas");
+  submitEnviar.addEventListener("submit", (e) => {
+    e.preventDefault();
+  });
+  const textodeDireccion = document.querySelector(".de-direccion-definitiva");
+  const deDireccion = document.querySelector("#de-direccion");
+  deDireccion.addEventListener("checked", (e) => {
+    if (e.target.value === "deDireccion") {
+      textodeDireccion.classList.add("on");
+    } else {
+      textodeDireccion.classList.remove("on");
+    }
+  });
 
   const arrayCoordenadas = (array) => {
     const coordenadasBarcelona = array; // aqui sacamos las coordenadas del fetch
