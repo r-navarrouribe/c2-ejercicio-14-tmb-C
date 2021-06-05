@@ -24,6 +24,42 @@ console.log(`llamada a TMB ${metropolitano}`);
 /* patron que he seguido : primero creo una funcion llamada planning que recogue el planning, despues extraemos los datos etc recogidos en nuevaRuta, 
 dentro creo una funcion nueva que recoge los datos del mapbox (quizas tengamos que invertirlas) extraigo los datos de coordenadas y lo introducimos en el mapa a la vez que lo generamos en  */
 
+const coordenadas = {
+  desde: {
+    latitud: 0,
+    longitud: 0,
+  },
+  hasta: {
+    latitud: 0,
+    longitud: 0,
+  },
+};
+const options = {
+  enableHighAccuracy: true,
+  timeout: 5000,
+  maximumAge: 0,
+};
+
+const obtenerPosicionActual = (posicion) => {
+  const { coords } = posicion;
+
+  coordenadas.desde.latitud = coords.latitude;
+  coordenadas.desde.longitud = coords.longitude;
+};
+
+const error = (error) => {
+  console.warn(`ERROR(${error.code}): ${error.message}`);
+};
+const ubicacionActual = () => {
+  navigator.geolocation.getCurrentPosition(
+    obtenerPosicionActual,
+    error,
+    options
+  );
+};
+ubicacionActual();
+console.log(coordenadas);
+
 const planning = (datos) => {
   const nuevaRuta = { ...datos }; // creacion del objeto planning
 
@@ -69,16 +105,6 @@ const planning = (datos) => {
     generaMapa(coordenadasBarcelona, mapa); // generamos un mapa con las coordenadas que queremos, tendremos que cambiarlo a la hora de poner el bucle segun si es current location o location buscada
 
     // Coordenadas que se mandarán a la API de TMB. Tienes que alimentar este objeto a partir de las coordenadas que te dé la API de Mapbox ^ lo de arriba sera lo que este aqui
-    const coordenadas = {
-      desde: {
-        latitud: 0,
-        longitud: 0,
-      },
-      hasta: {
-        latitud: 0,
-        longitud: 0,
-      },
-    };
   };
 };
 
