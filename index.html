@@ -27,7 +27,13 @@
         <div class="coordenadas">
           <h3>Desde:</h3>
           <div class="grupo">
-            <input type="radio" id="de-mi-ubicacion" name="de" checked />
+            <input
+              type="radio"
+              id="de-mi-ubicacion"
+              value="origen"
+              name="de"
+              checked
+            />
             <label for="de-mi-ubicacion">Usar mi ubicación</label>
           </div>
           <div class="grupo introducirUbicacion">
@@ -49,7 +55,7 @@
         <div class="coordenadas">
           <h3>Hasta:</h3>
           <div class="grupo">
-            <input type="radio" id="a-mi-ubicacion" name="a" />
+            <input type="radio" id="a-mi-ubicacion" value="origen" name="a" />
             <label for="a-mi-ubicacion">Usar mi ubicación</label>
           </div>
           <div class="grupo introducirUbicacion">
@@ -58,7 +64,7 @@
           </div>
           <input
             type="text"
-            class="a-direccion-definitiva direccion-definitiva"
+            class="a-direccion-definitiva direccion-definitiva on"
             placeholder="Introduce la dirección"
           />
           <span class="nombre-lugar"></span>
