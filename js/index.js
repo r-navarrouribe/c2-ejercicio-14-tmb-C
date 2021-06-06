@@ -2,17 +2,7 @@
 
 // api localizaar zona mediante texto y transformarla a lnglat
 let localidad = "mataro+santiago";
-const prueba = document.querySelector(".prueba");
-const inputText = document.querySelector(".prueba");
-/*   .addEventListener("change", (e) => {
 
-    console.log(e.target.value);
-  }); */
-inputText.addEventListener("input", (e) => {
-  console.log(e.target.value);
-  localidad = e.target.value;
-  console.log(localidad);
-});
 const coordenadas = {
   desde: {
     latitud: 0,
@@ -81,6 +71,11 @@ grupoElemento.forEach((elemento, On) => {
         options
       );
     } else {
+      inputTextElementos[On].addEventListener("input", (e) => {
+        console.log(e.target.value);
+        localidad = e.target.value.replaceAll(" ", "+");
+        console.log(localidad);
+      });
       const datosUbicacion = fetch(geocodingApi)
         .then((dato) => dato.json())
         .then((datos) =>
