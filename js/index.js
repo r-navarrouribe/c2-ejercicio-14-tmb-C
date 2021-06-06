@@ -1,3 +1,4 @@
+/* eslint-disable no-loop-func */
 /* global mapboxgl */
 
 // api localizaar zona mediante texto y transformarla a lnglat
@@ -159,7 +160,7 @@ const planning = (datos) => {
           distance,
           duration,
           startTime,
-          from: { name: desde },
+          from: { name: desde, lon, lat },
           to: { name: hasta },
         } = paso;
 
@@ -167,6 +168,29 @@ const planning = (datos) => {
         const nuevoPaso = document.querySelector(".paso-dummy").cloneNode(true);
         nuevoPaso.classList.remove("paso-dummy");
         nuevoPaso.classList.add("nuevo-paso");
+
+        // Mapa de cada paso
+
+        const mapa = nuevoPaso.querySelector(".mapa");
+        // LLama a esta función para generar el pequeño mapa que sale en cada paso
+        // Le tienes que pasar un array con las dos coordenadas y el elemento HTML donde tiene que generar el mapa
+        const generaMapa = (coordenadas, mapa) => {
+          const mapbox = new mapboxgl.Map({
+            container: mapa, // clase donde se pondra el mapa
+            style: "mapbox://styles/mapbox/streets-v11",
+            center: coordenadas, // solo las dos coordenadas donde se fijara el mapa al iniciarse
+            zoom: 18,
+          });
+
+          const marcador = new mapboxgl.Marker()
+            .setLngLat(coordenadas)
+            .addTo(mapbox); // marcador para ubicarnos bien en el mapa
+        };
+        const arrayCoordenadasOrigen = [lon, lat];
+
+        console.log(arrayCoordenadasOrigen);
+
+        generaMapa(arrayCoordenadasOrigen, mapa);
 
         // Encabezado
         const encabezadoPaso = nuevoPaso.querySelector(".paso-encabezado");
@@ -202,34 +226,6 @@ const planning = (datos) => {
       }
 
       console.log(listadoPasos);
-
-      const mapa = document.querySelector(".mapa");
-      // LLama a esta función para generar el pequeño mapa que sale en cada paso
-      // Le tienes que pasar un array con las dos coordenadas y el elemento HTML donde tiene que generar el mapa
-      const generaMapa = (coordenadas, mapa) => {
-        const mapbox = new mapboxgl.Map({
-          container: mapa, // clase donde se pondra el mapa
-          style: "mapbox://styles/mapbox/streets-v11",
-          center: coordenadas, // solo las dos coordenadas donde se fijara el mapa al iniciarse
-          zoom: 12,
-        });
-
-        const marcador = new mapboxgl.Marker()
-          .setLngLat(coordenadas)
-          .addTo(mapbox); // marcador para ubicarnos bien en el mapa
-
-        const geolocalizar = new MapboxGeocoder({
-          // ponemos buscador to cool para que mario este contento y nosotros autosatisfechos :3
-          accessToken: mapboxgl.accessToken,
-          mapboxgl,
-          marker: false,
-          placeholder: "Encuentrate :DDDDD",
-        });
-
-        mapbox.addControl(geolocalizar);
-      };
-
-      generaMapa(coordenadasBarcelona, mapa);
     };
     // generamos un mapa con las coordenadas que queremos, tendremos que cambiarlo a la hora de poner el bucle segun si es current location o location buscada
     iniciar.addEventListener("click", iniciarRuta);
