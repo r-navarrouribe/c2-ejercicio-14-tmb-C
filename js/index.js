@@ -15,15 +15,18 @@ const coordenadas = {
     longitud: 0,
   },
 };
+
 const mapboxToken =
   "pk.eyJ1IjoiemlpbmlrIiwiYSI6ImNrcGk3c3UxZzAwNmQycHAwZTk0YjhpemUifQ.TfQ7tlPczVzbIefuWdtPtA";
-const geocodingApi = `https://api.mapbox.com/geocoding/v5/mapbox.places/${localidadOrigen}.json?&access_token=${mapboxToken}`;
+let geocodingApi = `https://api.mapbox.com/geocoding/v5/mapbox.places/${localidadOrigen}.json?&access_token=${mapboxToken}`;
 
 // ruta con coordenades desde origen hasta destino y itinerario de como llegar y tempo empleado
 
 const tmbApi = "https://api.tmb.cat/v1/planner/plan";
 const appId = "ba67b92e";
 const appKey = "d65b2261fc0be12f06f831fc8334fe5a";
+const fromPlace = [];
+const toPlace = [];
 
 const metropolitano /* ano jaja */ = fetch(
   // llamada a la api tmb
@@ -46,14 +49,6 @@ const indicarUbicacion = document.querySelectorAll(
 );
 
 // Función vaciar pasos
-
-const vaciarPasos = () => {
-  for (const elementoPaso of elementoListaPasos.querySelectorAll(
-    ".nuevo-paso"
-  )) {
-    elementoPaso.remove();
-  }
-};
 
 // Fin función vaciar pasos
 
@@ -87,29 +82,42 @@ grupoElemento.forEach((elemento, On) => {
     } else {
       inputTextElementos[On].addEventListener("input", (e) => {
         console.log(e.target.value);
+
         if (On === 0) {
+          geocodingApi = `https://api.mapbox.com/geocoding/v5/mapbox.places/${e.target.value}.json?&access_token=${mapboxToken}`;
+          const datosUbicacion = fetch(geocodingApi)
+            .then((dato) => dato.json())
+            .then((datos) =>
+              arrayUbicacion(datos.features[0].geometry.coordinates)
+            );
+          const arrayUbicacion = (coordenadas) => {
+            const [latitud, longitud] = coordenadas;
+            lugar.longitud = latitud;
+            lugar.latitud = longitud;
+          };
           localidadOrigen = e.target.value.replaceAll(" ", "+");
         } else {
+          geocodingApi = `https://api.mapbox.com/geocoding/v5/mapbox.places/${e.target.value}.json?&access_token=${mapboxToken}`;
+          const datosUbicacion = fetch(geocodingApi)
+            .then((dato) => dato.json())
+            .then((datos) =>
+              arrayUbicacion(datos.features[0].geometry.coordinates)
+            );
+
+          const arrayUbicacion = (coordenadas) => {
+            const [latitud, longitud] = coordenadas;
+            lugar.longitud = latitud;
+            lugar.latitud = longitud;
+          };
           localidadDestino = e.target.value.replaceAll(" ", "+");
         }
-        console.log(localidadDestino, localidadOrigen);
+        console.log(coordenadas);
       });
-      const datosUbicacion = fetch(geocodingApi)
-        .then((dato) => dato.json())
-        .then((datos) =>
-          arrayUbicacion(datos.features[0].geometry.coordinates)
-        );
-      const arrayUbicacion = (coordenadas) => {
-        const [latitud, longitud] = coordenadas;
-        lugar.longitud = latitud;
-        lugar.latitud = longitud;
-      };
 
-      console.log(coordenadas);
+      console.log(localidadOrigen);
     }
     if (indicarUbicacion[On].checked) {
       console.log(e);
-
       inputTextElementos[On].classList.add("on");
     } else {
       inputTextElementos[On].classList.remove("on");
@@ -117,6 +125,14 @@ grupoElemento.forEach((elemento, On) => {
   });
   console.log(coordenadas);
 });
+
+const vaciarPasos = () => {
+  for (const elementoPaso of elementoListaPasos.querySelectorAll(
+    ".nuevo-paso"
+  )) {
+    elementoPaso.remove();
+  }
+};
 const planning = (datos) => {
   const nuevaRuta = { ...datos }; // creacion del objeto planning
 
