@@ -48,9 +48,17 @@ const indicarUbicacion = document.querySelectorAll(
   ".introducirUbicacion input"
 );
 
-// Función vaciar pasos
+// Funcion getEmoji
 
-// Fin función vaciar pasos
+const getEmoji = (paso) => {
+  if (paso.mode === "WALK") {
+    return "🚶";
+  } else if (paso.mode === "SUBWAY") {
+    return "🚇";
+  } else if (paso.mode === "BUS") {
+    return "🚌";
+  }
+};
 
 grupoElemento.forEach((elemento, On) => {
   console.log(elemento, On);
@@ -237,6 +245,11 @@ const planning = (datos) => {
 
         const duracionPaso = nuevoPaso.querySelector(".paso-duracion");
         duracionPaso.textContent = `Duración: ${(duration / 3600).toFixed(2)}h`;
+
+        // Emoji
+        const emojiPaso = nuevoPaso.querySelector(".emoji-paso");
+        emojiPaso.textContent = getEmoji(paso);
+
         // Inserción del paso
         elementoListaPasos.append(nuevoPaso);
       }
