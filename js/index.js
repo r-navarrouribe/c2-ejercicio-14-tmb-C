@@ -1,6 +1,18 @@
 /* global mapboxgl */
 
 // api localizaar zona mediante texto y transformarla a lnglat
+let localidad = "mataro+santiago";
+const prueba = document.querySelector(".prueba");
+const inputText = document.querySelector(".prueba");
+/*   .addEventListener("change", (e) => {
+
+    console.log(e.target.value);
+  }); */
+inputText.addEventListener("input", (e) => {
+  console.log(e.target.value);
+  localidad = e.target.value;
+  console.log(localidad);
+});
 const coordenadas = {
   desde: {
     latitud: 0,
@@ -11,7 +23,6 @@ const coordenadas = {
     longitud: 0,
   },
 };
-const localidad = "mataro,+santiago+rusiñol";
 const mapboxToken =
   "pk.eyJ1IjoiemlpbmlrIiwiYSI6ImNrcGk3c3UxZzAwNmQycHAwZTk0YjhpemUifQ.TfQ7tlPczVzbIefuWdtPtA";
 const geocodingApi = `https://api.mapbox.com/geocoding/v5/mapbox.places/${localidad}.json?&access_token=${mapboxToken}`;
