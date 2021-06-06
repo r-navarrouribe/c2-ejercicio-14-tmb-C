@@ -48,18 +48,6 @@ const indicarUbicacion = document.querySelectorAll(
   ".introducirUbicacion input"
 );
 
-// Funcion getEmoji
-
-const getEmoji = (paso) => {
-  if (paso.mode === "WALK") {
-    return "🚶";
-  } else if (paso.mode === "SUBWAY") {
-    return "🚇";
-  } else if (paso.mode === "BUS") {
-    return "🚌";
-  }
-};
-
 grupoElemento.forEach((elemento, On) => {
   console.log(elemento, On);
   elemento.addEventListener("change", (e) => {
@@ -247,8 +235,13 @@ const planning = (datos) => {
         duracionPaso.textContent = `Duración: ${(duration / 3600).toFixed(2)}h`;
 
         // Emoji
-        const emojiPaso = nuevoPaso.querySelector(".emoji-paso");
-        emojiPaso.textContent = getEmoji(paso);
+        if (paso.mode === "WALK") {
+          nuevoPaso.classList.add("walk");
+        } else if (paso.mode === "SUBWAY") {
+          nuevoPaso.classList.add("subway");
+        } else if (paso.mode === "BUS") {
+          nuevoPaso.classList.add("bus");
+        }
 
         // Inserción del paso
         elementoListaPasos.append(nuevoPaso);
