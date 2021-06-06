@@ -169,7 +169,7 @@ const planning = (datos) => {
         nuevoPaso.classList.remove("paso-dummy");
         nuevoPaso.classList.add("nuevo-paso");
 
-        // Mapa
+        // Mapa de cada paso
 
         const mapa = nuevoPaso.querySelector(".mapa");
         // LLama a esta función para generar el pequeño mapa que sale en cada paso
