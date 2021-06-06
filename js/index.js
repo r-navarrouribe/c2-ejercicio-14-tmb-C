@@ -1,7 +1,8 @@
 /* global mapboxgl */
 
 // api localizaar zona mediante texto y transformarla a lnglat
-let localidad = "mataro+santiago";
+let localidadOrigen = "barcelona";
+let localidadDestino;
 
 const coordenadas = {
   desde: {
@@ -15,7 +16,7 @@ const coordenadas = {
 };
 const mapboxToken =
   "pk.eyJ1IjoiemlpbmlrIiwiYSI6ImNrcGk3c3UxZzAwNmQycHAwZTk0YjhpemUifQ.TfQ7tlPczVzbIefuWdtPtA";
-const geocodingApi = `https://api.mapbox.com/geocoding/v5/mapbox.places/${localidad}.json?&access_token=${mapboxToken}`;
+const geocodingApi = `https://api.mapbox.com/geocoding/v5/mapbox.places/${localidadOrigen}.json?&access_token=${mapboxToken}`;
 
 // ruta con coordenades desde origen hasta destino y itinerario de como llegar y tempo empleado
 
@@ -73,8 +74,12 @@ grupoElemento.forEach((elemento, On) => {
     } else {
       inputTextElementos[On].addEventListener("input", (e) => {
         console.log(e.target.value);
-        localidad = e.target.value.replaceAll(" ", "+");
-        console.log(localidad);
+        if (On === 0) {
+          localidadOrigen = e.target.value.replaceAll(" ", "+");
+        } else {
+          localidadDestino = e.target.value.replaceAll(" ", "+");
+        }
+        console.log(localidadDestino, localidadOrigen);
       });
       const datosUbicacion = fetch(geocodingApi)
         .then((dato) => dato.json())

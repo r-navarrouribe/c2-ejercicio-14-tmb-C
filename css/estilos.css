@@ -15,9 +15,9 @@ li {
 h3 {
   margin-top: 0;
 }
-/* .paso-dummy {
+.paso-dummy {
   display: none;
-} */
+}
 .paso-hora,
 .paso-distancia,
 .paso-duracion,
