@@ -36,7 +36,63 @@ dentro creo una funcion nueva que recoge los datos del mapbox (quizas tengamos q
 // Declaración de elementos para la iteración de los pasos
 const elementoListaPasos = document.querySelector(".pasos");
 const iniciar = document.querySelector(".enviar");
+const inputTextElementos = document.querySelectorAll(".direccion-definitiva");
+const grupoElemento = document.querySelectorAll(".coordenadas");
+const indicarUbicacion = document.querySelectorAll(
+  ".introducirUbicacion input"
+);
 
+grupoElemento.forEach((elemento, On) => {
+  console.log(elemento, On);
+  elemento.addEventListener("change", (e) => {
+    const lugar = On === 0 ? coordenadas.desde : coordenadas.hasta;
+    console.log(lugar);
+    if (e.target.value === "origen") {
+      const options = {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0,
+      };
+
+      const error = (error) => {
+        console.warn(`ERROR(${error.code}): ${error.message}`);
+      };
+      const obtenerPosicionActual = (posicion) => {
+        const { coords } = posicion;
+
+        lugar.longitud = coords.longitude;
+        lugar.latitud = coords.latitude;
+        console.log(coordenadas);
+      };
+      navigator.geolocation.getCurrentPosition(
+        obtenerPosicionActual,
+        error,
+        options
+      );
+    } else {
+      const datosUbicacion = fetch(geocodingApi)
+        .then((dato) => dato.json())
+        .then((datos) =>
+          arrayUbicacion(datos.features[0].geometry.coordinates)
+        );
+      const arrayUbicacion = (coordenadas) => {
+        const [latitud, longitud] = coordenadas;
+        lugar.longitud = latitud;
+        lugar.latitud = longitud;
+      };
+
+      console.log(coordenadas);
+    }
+    if (indicarUbicacion[On].checked) {
+      console.log(e);
+
+      inputTextElementos[On].classList.add("on");
+    } else {
+      inputTextElementos[On].classList.remove("on");
+    }
+  });
+  console.log(coordenadas);
+});
 const planning = (datos) => {
   const nuevaRuta = { ...datos }; // creacion del objeto planning
 
@@ -48,55 +104,6 @@ const planning = (datos) => {
     .then((datos) => arrayCoordenadas(datos.features[0].geometry.coordinates)); // aqui cojo la primera coordenada de la array pero hay muchas mas, queda por ver /se podria hacer un bucle con datos.features y ver que podemos usar
 
   mapboxgl.accessToken = mapboxToken; // llamada a la api con su token
-
-  const inputTextElementos = document.querySelectorAll(".direccion-definitiva");
-  const grupoElemento = document.querySelectorAll(".coordenadas");
-  const indicarUbicacion = document.querySelectorAll(
-    ".introducirUbicacion input"
-  );
-
-  grupoElemento.forEach((elemento, On) => {
-    console.log(elemento, On);
-    elemento.addEventListener("change", (e) => {
-      const lugar = On === 0 ? coordenadas.desde : coordenadas.hasta;
-      console.log(lugar);
-      if (e.target.value === "origen") {
-        const options = {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 0,
-        };
-
-        const error = (error) => {
-          console.warn(`ERROR(${error.code}): ${error.message}`);
-        };
-        const obtenerPosicionActual = (posicion) => {
-          const { coords } = posicion;
-
-          lugar.longitud = coords.longitude;
-          lugar.latitud = coords.latitude;
-          console.log(coordenadas);
-        };
-        navigator.geolocation.getCurrentPosition(
-          obtenerPosicionActual,
-          error,
-          options
-        );
-      } else {
-        lugar.longitud = 0;
-        lugar.latitud = 0;
-        console.log(coordenadas);
-      }
-      if (indicarUbicacion[On].checked) {
-        console.log(e);
-
-        inputTextElementos[On].classList.add("on");
-      } else {
-        inputTextElementos[On].classList.remove("on");
-      }
-    });
-    console.log(coordenadas);
-  });
 
   const submitEnviar = document.querySelector(".form-coordenadas");
   submitEnviar.addEventListener("submit", (e) => {
