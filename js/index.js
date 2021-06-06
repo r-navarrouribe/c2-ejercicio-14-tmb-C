@@ -1,7 +1,16 @@
 /* global mapboxgl */
 
 // api localizaar zona mediante texto y transformarla a lnglat
-
+const coordenadas = {
+  desde: {
+    latitud: 0,
+    longitud: 0,
+  },
+  hasta: {
+    latitud: 0,
+    longitud: 0,
+  },
+};
 const localidad = "mataro,+santiago+rusiñol";
 const mapboxToken =
   "pk.eyJ1IjoiemlpbmlrIiwiYSI6ImNrcGk3c3UxZzAwNmQycHAwZTk0YjhpemUifQ.TfQ7tlPczVzbIefuWdtPtA";
@@ -26,17 +35,7 @@ dentro creo una funcion nueva que recoge los datos del mapbox (quizas tengamos q
 
 // Declaración de elementos para la iteración de los pasos
 const elementoListaPasos = document.querySelector(".pasos");
-
-const coordenadas = {
-  desde: {
-    latitud: 0,
-    longitud: 0,
-  },
-  hasta: {
-    latitud: 0,
-    longitud: 0,
-  },
-};
+const iniciar = document.querySelector(".enviar");
 
 const planning = (datos) => {
   const nuevaRuta = { ...datos }; // creacion del objeto planning
@@ -120,85 +119,87 @@ const planning = (datos) => {
     // Declaración array de pasos
 
     const listadoPasos = datos.itineraries[0].legs;
+    const iniciarRuta = () => {
+      // Iteración de los pasos
+      let i = 1;
+      for (const paso of listadoPasos) {
+        const {
+          distance,
+          duration,
+          startTime,
+          from: { name: desde },
+          to: { name: hasta },
+        } = paso;
 
-    // Iteración de los pasos
-    let i = 1;
-    for (const paso of listadoPasos) {
-      const {
-        distance,
-        duration,
-        startTime,
-        from: { name: desde },
-        to: { name: hasta },
-      } = paso;
+        // Clonación del dummy
+        const nuevoPaso = document.querySelector(".paso-dummy").cloneNode(true);
+        nuevoPaso.classList.remove("paso-dummy");
 
-      // Clonación del dummy
-      const nuevoPaso = document.querySelector(".paso-dummy").cloneNode(true);
-      nuevoPaso.classList.remove("paso-dummy");
+        // Encabezado
+        const encabezadoPaso = nuevoPaso.querySelector(".paso-encabezado");
+        const numeroPaso = nuevoPaso.querySelector(".paso-numero");
+        numeroPaso.textContent = `Paso ${i++}: `;
+        const origenPaso = nuevoPaso.querySelector(".paso-from");
+        origenPaso.textContent = `De ${desde} `;
+        const destinoPaso = nuevoPaso.querySelector(".paso-to");
+        destinoPaso.textContent = `a ${hasta}`;
 
-      // Encabezado
-      const encabezadoPaso = nuevoPaso.querySelector(".paso-encabezado");
-      const numeroPaso = nuevoPaso.querySelector(".paso-numero");
-      numeroPaso.textContent = `Paso ${i++}: `;
-      const origenPaso = nuevoPaso.querySelector(".paso-from");
-      origenPaso.textContent = `De ${desde} `;
-      const destinoPaso = nuevoPaso.querySelector(".paso-to");
-      destinoPaso.textContent = `a ${hasta}`;
+        // Hora, distancia y duración
+        const horaInicio = new Date(startTime);
+        const minutos = horaInicio.getMinutes();
+        const insertarMinutos = (minutos) => {
+          if (minutos < 10) {
+            return `0${minutos}`;
+          } else {
+            return minutos;
+          }
+        };
+        const horaPaso = nuevoPaso.querySelector(".paso-hora");
+        horaPaso.textContent = `Hora: ${horaInicio.getHours()}:${insertarMinutos(
+          minutos
+        )}`;
 
-      // Hora, distancia y duración
-      const horaInicio = new Date(startTime);
-      const minutos = horaInicio.getMinutes();
-      const insertarMinutos = (minutos) => {
-        if (minutos < 10) {
-          return `0${minutos}`;
-        } else {
-          return minutos;
-        }
+        const distanciaPaso = nuevoPaso.querySelector(".paso-distancia");
+        distanciaPaso.textContent = `Distancia: ${Math.round(distance)}m`;
+
+        const duracionPaso = nuevoPaso.querySelector(".paso-duracion");
+        duracionPaso.textContent = `Duración: ${(duration / 3600).toFixed(2)}h`;
+        // Inserción del paso
+        elementoListaPasos.append(nuevoPaso);
+      }
+
+      console.log(listadoPasos);
+
+      const mapa = document.querySelector(".mapa");
+      // LLama a esta función para generar el pequeño mapa que sale en cada paso
+      // Le tienes que pasar un array con las dos coordenadas y el elemento HTML donde tiene que generar el mapa
+      const generaMapa = (coordenadas, mapa) => {
+        const mapbox = new mapboxgl.Map({
+          container: mapa, // clase donde se pondra el mapa
+          style: "mapbox://styles/mapbox/streets-v11",
+          center: coordenadas, // solo las dos coordenadas donde se fijara el mapa al iniciarse
+          zoom: 12,
+        });
+
+        const marcador = new mapboxgl.Marker()
+          .setLngLat(coordenadas)
+          .addTo(mapbox); // marcador para ubicarnos bien en el mapa
+
+        const geolocalizar = new MapboxGeocoder({
+          // ponemos buscador to cool para que mario este contento y nosotros autosatisfechos :3
+          accessToken: mapboxgl.accessToken,
+          mapboxgl,
+          marker: false,
+          placeholder: "Encuentrate :DDDDD",
+        });
+
+        mapbox.addControl(geolocalizar);
       };
-      const horaPaso = nuevoPaso.querySelector(".paso-hora");
-      horaPaso.textContent = `Hora: ${horaInicio.getHours()}:${insertarMinutos(
-        minutos
-      )}`;
 
-      const distanciaPaso = nuevoPaso.querySelector(".paso-distancia");
-      distanciaPaso.textContent = `Distancia: ${Math.round(distance)}m`;
-
-      const duracionPaso = nuevoPaso.querySelector(".paso-duracion");
-      duracionPaso.textContent = `Duración: ${(duration / 3600).toFixed(2)}h`;
-      // Inserción del paso
-      elementoListaPasos.append(nuevoPaso);
-    }
-
-    console.log(listadoPasos);
-
-    const mapa = document.querySelector(".mapa");
-    // LLama a esta función para generar el pequeño mapa que sale en cada paso
-    // Le tienes que pasar un array con las dos coordenadas y el elemento HTML donde tiene que generar el mapa
-    const generaMapa = (coordenadas, mapa) => {
-      const mapbox = new mapboxgl.Map({
-        container: mapa, // clase donde se pondra el mapa
-        style: "mapbox://styles/mapbox/streets-v11",
-        center: coordenadas, // solo las dos coordenadas donde se fijara el mapa al iniciarse
-        zoom: 12,
-      });
-
-      const marcador = new mapboxgl.Marker()
-        .setLngLat(coordenadas)
-        .addTo(mapbox); // marcador para ubicarnos bien en el mapa
-
-      const geolocalizar = new MapboxGeocoder({
-        // ponemos buscador to cool para que mario este contento y nosotros autosatisfechos :3
-        accessToken: mapboxgl.accessToken,
-        mapboxgl,
-        marker: false,
-        placeholder: "Encuentrate :DDDDD",
-      });
-
-      mapbox.addControl(geolocalizar);
+      generaMapa(coordenadasBarcelona, mapa);
     };
-
-    generaMapa(coordenadasBarcelona, mapa); // generamos un mapa con las coordenadas que queremos, tendremos que cambiarlo a la hora de poner el bucle segun si es current location o location buscada
-
+    // generamos un mapa con las coordenadas que queremos, tendremos que cambiarlo a la hora de poner el bucle segun si es current location o location buscada
+    iniciar.addEventListener("click", iniciarRuta);
     // Coordenadas que se mandarán a la API de TMB. Tienes que alimentar este objeto a partir de las coordenadas que te dé la API de Mapbox ^ lo de arriba sera lo que este aqui
   };
 };
