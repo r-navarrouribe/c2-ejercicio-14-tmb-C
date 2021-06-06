@@ -7,18 +7,18 @@ let localidadDestino;
 
 const coordenadas = {
   desde: {
-    latitud: 0,
-    longitud: 0,
+    latitud: 41.42252,
+    longitud: 2.187824,
   },
   hasta: {
-    latitud: 0,
-    longitud: 0,
+    latitud: 41.42252,
+    longitud: 2.197824,
   },
 };
 
-const mapboxToken =
+let mapboxToken =
   "pk.eyJ1IjoiemlpbmlrIiwiYSI6ImNrcGk3c3UxZzAwNmQycHAwZTk0YjhpemUifQ.TfQ7tlPczVzbIefuWdtPtA";
-let geocodingApi = `https://api.mapbox.com/geocoding/v5/mapbox.places/${localidadOrigen}.json?&access_token=${mapboxToken}`;
+const geocodingApi = `https://api.mapbox.com/geocoding/v5/mapbox.places/${localidadOrigen}.json?&access_token=${mapboxToken}`;
 
 // ruta con coordenades desde origen hasta destino y itinerario de como llegar y tempo empleado
 
@@ -30,15 +30,18 @@ const toPlace = [];
 
 const metropolitano /* ano jaja */ = fetch(
   // llamada a la api tmb
-  `${tmbApi}?app_id=${appId}&app_key=${appKey}&fromPlace=41.3755204,2.1498870&toPlace=41.422520,2.187824&date=06/06/2021&time=11:58am&arriveBy=11:58am&mode=WALK,BUS,SUBWAY`
+  `${tmbApi}?app_id=${appId}&app_key=${appKey}&fromPlace=${coordenadas.desde.latitud},${coordenadas.desde.longitud}&toPlace=${coordenadas.hasta.latitud},${coordenadas.hasta.longitud}&date=06/06/2021&time=11:58am&arriveBy=11:58am&mode=WALK,BUS,SUBWAY`
 )
   .then((dato) => dato.json())
   .then((datos) => planning(datos.plan)); // extraccion del plan de la ruta de tmb ^ justo aqui arriba parametros obligatorios que he incluido coordenadas tendremos que asignarlas a constantes o varieables segun encesitemos
-console.log(`llamada a TMB ${metropolitano}`);
+console.log(coordenadas.desde.latitud, coordenadas.desde.longitud);
 
 /* patron que he seguido : primero creo una funcion llamada planning que recogue el planning, despues extraemos los datos etc recogidos en nuevaRuta,
 dentro creo una funcion nueva que recoge los datos del mapbox (quizas tengamos que invertirlas) extraigo los datos de coordenadas y lo introducimos en el mapa a la vez que lo generamos en  */
-
+const submitEnviar = document.querySelector(".form-coordenadas");
+submitEnviar.addEventListener("submit", (e) => {
+  e.preventDefault();
+});
 // Declaración de elementos para la iteración de los pasos
 const elementoListaPasos = document.querySelector(".pasos");
 const iniciar = document.querySelector(".enviar");
@@ -47,10 +50,10 @@ const grupoElemento = document.querySelectorAll(".coordenadas");
 const indicarUbicacion = document.querySelectorAll(
   ".introducirUbicacion input"
 );
-
+const nombreLugar = document.querySelectorAll(".nombre-lugar");
 grupoElemento.forEach((elemento, On) => {
   console.log(elemento, On);
-  elemento.addEventListener("change", (e) => {
+  elemento.addEventListener("input", (e) => {
     const lugar = On === 0 ? coordenadas.desde : coordenadas.hasta;
     console.log(lugar);
     if (e.target.value === "origen") {
@@ -83,31 +86,29 @@ grupoElemento.forEach((elemento, On) => {
           geocodingApi = `https://api.mapbox.com/geocoding/v5/mapbox.places/${e.target.value}.json?&access_token=${mapboxToken}`;
           const datosUbicacion = fetch(geocodingApi)
             .then((dato) => dato.json())
-            .then((datos) =>
-              arrayUbicacion(datos.features[0].geometry.coordinates)
-            );
+            .then((datos) => arrayUbicacion(datos.features[0]));
           const arrayUbicacion = (coordenadas) => {
-            const [latitud, longitud] = coordenadas;
+            const [latitud, longitud] = coordenadas.geometry.coordinates;
             lugar.longitud = latitud;
             lugar.latitud = longitud;
+            nombreLugar[On].textContent = coordenadas.place_name;
           };
           localidadOrigen = e.target.value.replaceAll(" ", "+");
         } else {
           geocodingApi = `https://api.mapbox.com/geocoding/v5/mapbox.places/${e.target.value}.json?&access_token=${mapboxToken}`;
           const datosUbicacion = fetch(geocodingApi)
             .then((dato) => dato.json())
-            .then((datos) =>
-              arrayUbicacion(datos.features[0].geometry.coordinates)
-            );
+            .then((datos) => arrayUbicacion(datos.features[0]));
 
           const arrayUbicacion = (coordenadas) => {
-            const [latitud, longitud] = coordenadas;
+            const [latitud, longitud] = coordenadas.geometry.coordinates;
             lugar.longitud = latitud;
             lugar.latitud = longitud;
+            nombreLugar[On].textContent = coordenadas.place_name;
           };
+
           localidadDestino = e.target.value.replaceAll(" ", "+");
         }
-        console.log(coordenadas);
       });
 
       console.log(localidadOrigen);
@@ -120,6 +121,9 @@ grupoElemento.forEach((elemento, On) => {
     }
   });
   console.log(coordenadas);
+  mapboxToken =
+    "pk.eyJ1IjoiemlpbmlrIiwiYSI6ImNrcGk3c3UxZzAwNmQycHAwZTk0YjhpemUifQ.TfQ7tlPczVzbIefuWdtPtA";
+  let geocodingApi = `https://api.mapbox.com/geocoding/v5/mapbox.places/${localidadOrigen}.json?&access_token=${mapboxToken}`;
 });
 
 const vaciarPasos = () => {
@@ -141,10 +145,6 @@ const planning = (datos) => {
 
   mapboxgl.accessToken = mapboxToken; // llamada a la api con su token
 
-  const submitEnviar = document.querySelector(".form-coordenadas");
-  submitEnviar.addEventListener("submit", (e) => {
-    e.preventDefault();
-  });
   const textodeDireccion = document.querySelector(".de-direccion-definitiva");
   const deDireccion = document.querySelector("#de-direccion");
   deDireccion.addEventListener("checked", (e) => {
