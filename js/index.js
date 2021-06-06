@@ -44,6 +44,18 @@ const indicarUbicacion = document.querySelectorAll(
   ".introducirUbicacion input"
 );
 
+// Función vaciar pasos
+
+const vaciarPasos = () => {
+  for (const elementoPaso of elementoListaPasos.querySelectorAll(
+    ".nuevo-paso"
+  )) {
+    elementoPaso.remove();
+  }
+};
+
+// Fin función vaciar pasos
+
 grupoElemento.forEach((elemento, On) => {
   console.log(elemento, On);
   elemento.addEventListener("change", (e) => {
@@ -138,6 +150,8 @@ const planning = (datos) => {
 
     const listadoPasos = datos.itineraries[0].legs;
     const iniciarRuta = () => {
+      vaciarPasos();
+
       // Iteración de los pasos
       let i = 1;
       for (const paso of listadoPasos) {
@@ -152,6 +166,7 @@ const planning = (datos) => {
         // Clonación del dummy
         const nuevoPaso = document.querySelector(".paso-dummy").cloneNode(true);
         nuevoPaso.classList.remove("paso-dummy");
+        nuevoPaso.classList.add("nuevo-paso");
 
         // Encabezado
         const encabezadoPaso = nuevoPaso.querySelector(".paso-encabezado");
