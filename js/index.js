@@ -27,25 +27,10 @@ const appId = "ba67b92e";
 const appKey = "d65b2261fc0be12f06f831fc8334fe5a";
 const fromPlace = [];
 const toPlace = [];
-let metropolitano = fetch(
-  // llamada a la api tmb
-  `${tmbApi}?app_id=${appId}&app_key=${appKey}&fromPlace=${coordenadas.desde.latitud},${coordenadas.desde.longitud}&toPlace=${coordenadas.hasta.latitud},${coordenadas.hasta.longitud}&date=06/06/2021&time=11:58am&arriveBy=11:58am&mode=WALK,BUS,SUBWAY`
-)
-  .then((dato) => dato.json())
-  .then((datos) => planning(datos.plan));
+
 /* patron que he seguido : primero creo una funcion llamada planning que recogue el planning, despues extraemos los datos etc recogidos en nuevaRuta,
 dentro creo una funcion nueva que recoge los datos del mapbox (quizas tengamos que invertirlas) extraigo los datos de coordenadas y lo introducimos en el mapa a la vez que lo generamos en  */
-const submitEnviar = document.querySelector(".form-coordenadas");
-submitEnviar.addEventListener("submit", (e) => {
-  e.preventDefault();
-  metropolitano = fetch(
-    // llamada a la api tmb
-    `${tmbApi}?app_id=${appId}&app_key=${appKey}&fromPlace=${coordenadas.desde.latitud},${coordenadas.desde.longitud}&toPlace=${coordenadas.hasta.latitud},${coordenadas.hasta.longitud}&date=06/06/2021&time=11:58am&arriveBy=11:58am&mode=WALK,BUS,SUBWAY`
-  )
-    .then((dato) => dato.json())
-    .then((datos) => planning(datos.plan));
-});
-// Declaración de elementos para la iteración de los pasos
+
 const elementoListaPasos = document.querySelector(".pasos");
 const iniciar = document.querySelector(".enviar");
 const inputTextElementos = document.querySelectorAll(".direccion-definitiva");
@@ -133,36 +118,51 @@ const vaciarPasos = () => {
     elementoPaso.remove();
   }
 };
-const planning = (datos) => {
-  const nuevaRuta = { ...datos }; // creacion del objeto planning
 
-  console.log(nuevaRuta);
-
-  // captacion de las coordenadas introducidas en mapbox
-  const datosMapa = fetch(geocodingApi)
+const submitEnviar = document.querySelector(".form-coordenadas");
+submitEnviar.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const metropolitano = fetch(
+    // llamada a la api tmb
+    `${tmbApi}?app_id=${appId}&app_key=${appKey}&fromPlace=${coordenadas.desde.latitud},${coordenadas.desde.longitud}&toPlace=${coordenadas.hasta.latitud},${coordenadas.hasta.longitud}&date=06/06/2021&time=11:58am&arriveBy=11:58am&mode=WALK,BUS,SUBWAY`
+  )
     .then((dato) => dato.json())
-    .then((datos) => arrayCoordenadas(datos.features[0].geometry.coordinates)); // aqui cojo la primera coordenada de la array pero hay muchas mas, queda por ver /se podria hacer un bucle con datos.features y ver que podemos usar
+    .then((datos) => planning(datos.plan));
 
-  mapboxgl.accessToken = mapboxToken; // llamada a la api con su token
+  // Declaración de elementos para la iteración de los pasos
 
-  const textodeDireccion = document.querySelector(".de-direccion-definitiva");
-  const deDireccion = document.querySelector("#de-direccion");
-  deDireccion.addEventListener("checked", (e) => {
-    if (e.target.value === "deDireccion") {
-      textodeDireccion.classList.add("on");
-    } else {
-      textodeDireccion.classList.remove("on");
-    }
-  });
+  const planning = (datos) => {
+    const nuevaRuta = { ...datos }; // creacion del objeto planning
 
-  const arrayCoordenadas = (array) => {
-    const coordenadasBarcelona = array; // aqui sacamos las coordenadas del fetch
-    console.log(coordenadasBarcelona);
+    console.log(nuevaRuta);
 
-    // Declaración array de pasos
+    // captacion de las coordenadas introducidas en mapbox
+    const datosMapa = fetch(geocodingApi)
+      .then((dato) => dato.json())
+      .then((datos) =>
+        arrayCoordenadas(datos.features[0].geometry.coordinates)
+      ); // aqui cojo la primera coordenada de la array pero hay muchas mas, queda por ver /se podria hacer un bucle con datos.features y ver que podemos usar
 
-    const listadoPasos = datos.itineraries[0].legs;
-    const iniciarRuta = () => {
+    mapboxgl.accessToken = mapboxToken; // llamada a la api con su token
+
+    const textodeDireccion = document.querySelector(".de-direccion-definitiva");
+    const deDireccion = document.querySelector("#de-direccion");
+    deDireccion.addEventListener("checked", (e) => {
+      if (e.target.value === "deDireccion") {
+        textodeDireccion.classList.add("on");
+      } else {
+        textodeDireccion.classList.remove("on");
+      }
+    });
+
+    const arrayCoordenadas = (array) => {
+      const coordenadasBarcelona = array; // aqui sacamos las coordenadas del fetch
+      console.log(coordenadasBarcelona);
+
+      // Declaración array de pasos
+
+      const listadoPasos = datos.itineraries[0].legs;
+
       vaciarPasos();
 
       // Iteración de los pasos
@@ -248,11 +248,11 @@ const planning = (datos) => {
       }
 
       console.log(listadoPasos);
-    };
-    // generamos un mapa con las coordenadas que queremos, tendremos que cambiarlo a la hora de poner el bucle segun si es current location o location buscada
-    iniciar.addEventListener("click", iniciarRuta);
-    // Coordenadas que se mandarán a la API de TMB. Tienes que alimentar este objeto a partir de las coordenadas que te dé la API de Mapbox ^ lo de arriba sera lo que este aqui
-  };
-};
 
+      // generamos un mapa con las coordenadas que queremos, tendremos que cambiarlo a la hora de poner el bucle segun si es current location o location buscada
+
+      // Coordenadas que se mandarán a la API de TMB. Tienes que alimentar este objeto a partir de las coordenadas que te dé la API de Mapbox ^ lo de arriba sera lo que este aqui
+    };
+  };
+});
 // animos chicos mañana le damos duro
