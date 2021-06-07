@@ -16,9 +16,9 @@ const coordenadas = {
   },
 };
 
-let mapboxToken =
+const mapboxToken =
   "pk.eyJ1IjoiemlpbmlrIiwiYSI6ImNrcGk3c3UxZzAwNmQycHAwZTk0YjhpemUifQ.TfQ7tlPczVzbIefuWdtPtA";
-const geocodingApi = `https://api.mapbox.com/geocoding/v5/mapbox.places/${localidadOrigen}.json?&access_token=${mapboxToken}`;
+let geocodingApi = `https://api.mapbox.com/geocoding/v5/mapbox.places/${localidadOrigen}.json?&access_token=${mapboxToken}`;
 
 // ruta con coordenades desde origen hasta destino y itinerario de como llegar y tempo empleado
 
@@ -27,20 +27,23 @@ const appId = "ba67b92e";
 const appKey = "d65b2261fc0be12f06f831fc8334fe5a";
 const fromPlace = [];
 const toPlace = [];
-
-const metropolitano /* ano jaja */ = fetch(
+let metropolitano = fetch(
   // llamada a la api tmb
   `${tmbApi}?app_id=${appId}&app_key=${appKey}&fromPlace=${coordenadas.desde.latitud},${coordenadas.desde.longitud}&toPlace=${coordenadas.hasta.latitud},${coordenadas.hasta.longitud}&date=06/06/2021&time=11:58am&arriveBy=11:58am&mode=WALK,BUS,SUBWAY`
 )
   .then((dato) => dato.json())
-  .then((datos) => planning(datos.plan)); // extraccion del plan de la ruta de tmb ^ justo aqui arriba parametros obligatorios que he incluido coordenadas tendremos que asignarlas a constantes o varieables segun encesitemos
-console.log(coordenadas.desde.latitud, coordenadas.desde.longitud);
-
+  .then((datos) => planning(datos.plan));
 /* patron que he seguido : primero creo una funcion llamada planning que recogue el planning, despues extraemos los datos etc recogidos en nuevaRuta,
 dentro creo una funcion nueva que recoge los datos del mapbox (quizas tengamos que invertirlas) extraigo los datos de coordenadas y lo introducimos en el mapa a la vez que lo generamos en  */
 const submitEnviar = document.querySelector(".form-coordenadas");
 submitEnviar.addEventListener("submit", (e) => {
   e.preventDefault();
+  metropolitano = fetch(
+    // llamada a la api tmb
+    `${tmbApi}?app_id=${appId}&app_key=${appKey}&fromPlace=${coordenadas.desde.latitud},${coordenadas.desde.longitud}&toPlace=${coordenadas.hasta.latitud},${coordenadas.hasta.longitud}&date=06/06/2021&time=11:58am&arriveBy=11:58am&mode=WALK,BUS,SUBWAY`
+  )
+    .then((dato) => dato.json())
+    .then((datos) => planning(datos.plan));
 });
 // Declaración de elementos para la iteración de los pasos
 const elementoListaPasos = document.querySelector(".pasos");
@@ -121,9 +124,6 @@ grupoElemento.forEach((elemento, On) => {
     }
   });
   console.log(coordenadas);
-  mapboxToken =
-    "pk.eyJ1IjoiemlpbmlrIiwiYSI6ImNrcGk3c3UxZzAwNmQycHAwZTk0YjhpemUifQ.TfQ7tlPczVzbIefuWdtPtA";
-  let geocodingApi = `https://api.mapbox.com/geocoding/v5/mapbox.places/${localidadOrigen}.json?&access_token=${mapboxToken}`;
 });
 
 const vaciarPasos = () => {
